@@ -46,3 +46,22 @@ export function bufferToBase64URL(buffer: ArrayBuffer): string {
     .replace(/\//g, '_')
     .replace(/=/g, '');
 }
+
+export const transformLoginVerifyCredential = (credential: any) => {
+  // Early return if credential is invalid
+  if (!credential || !credential.response) {
+    throw new Error("Invalid credential");
+  }
+
+  // Transform the credential into the required format
+  return {
+    id: credential.id,
+    rawId: bufferToBase64URL(credential.rawId),
+    response: {
+      authenticatorData: bufferToBase64URL(credential.response.authenticatorData),
+      clientDataJSON: bufferToBase64URL(credential.response.clientDataJSON),
+      signature: bufferToBase64URL(credential.response.signature),
+    },
+    type: credential.type,
+  };
+};
