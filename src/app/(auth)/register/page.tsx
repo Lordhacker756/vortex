@@ -7,44 +7,88 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Fingerprint } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import axiosInstance from "@/lib/axios";
+import { base64URLToBuffer, transformCredential } from "@/lib/utils";
+import { ServerPublicKeyCredentialCreationOptions } from "@/lib/types";
 
 const RegisterPage = () => {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
 
   const handlePasskeyRegistration = async () => {
-    setIsRegistering(true);
     try {
+      if (!username.trim()) {
+        setError("Username is required");
+        return;
+      }
+      setError("");
+
+      const response = await axiosInstance.get("/auth/register", {
+        params: {
+          username: username.trim(),
+        },
+      });
+
+      console.log("Registration cookies:", document.cookie);
+
+      let challengeObj: ServerPublicKeyCredentialCreationOptions =
+        response.data;
+
+      // Convert base64url encoded challenge to ArrayBuffer
+      const challengeBuffer = base64URLToBuffer(
+        challengeObj.publicKey.challenge
+      );
+      const userIdBuffer = base64URLToBuffer(challengeObj.publicKey.user.id);
+
+      // Convert excludeCredentials ids to ArrayBuffer
+      const excludeCredentials =
+        challengeObj.publicKey.excludeCredentials?.map((credential) => ({
+          ...credential,
+          id: base64URLToBuffer(credential.id),
+          transports: undefined, // Add if your server provides transports
+        })) || [];
+
+      // Prepare the options with proper ArrayBuffer conversions
       const options = {
         publicKey: {
-          challenge: new Uint8Array(32),
-          rp: {
-            name: "Vortex",
-            id: window.location.hostname,
-          },
+          ...challengeObj.publicKey,
+          challenge: challengeBuffer,
           user: {
-            id: new Uint8Array(16),
-            name: "user@example.com",
-            displayName: "New User",
+            ...challengeObj.publicKey.user,
+            id: userIdBuffer,
           },
-          pubKeyCredParams: [
-            { type: "public-key", alg: -7 },
-            { type: "public-key", alg: -257 },
-          ],
-          authenticatorSelection: {
-            authenticatorAttachment: "platform",
-            userVerification: "preferred",
-          },
+          excludeCredentials,
         },
       };
 
-      const credential = await navigator.credentials.create(options);
-      console.log("Credential created:", credential);
+      setIsRegistering(true);
+      const originalCredential = await navigator.credentials.create(options);
+
+      const transformedCredential = transformCredential(originalCredential);
+      console.log(
+        "Credential created:",
+        originalCredential,
+        transformedCredential
+      );
+
+      // Here you would typically send the credential back to your server
+      const attestationResponse = await axiosInstance.post(
+        "/auth/verify-register",
+        transformedCredential
+      );
+
+      console.log("Verification cookies:", document.cookie);
+
+      console.log("Attestation response:", attestationResponse.data);
     } catch (error) {
       console.error("Error registering passkey:", error);
+      setError("Failed to register passkey");
     } finally {
       setIsRegistering(false);
     }
@@ -76,6 +120,16 @@ const RegisterPage = () => {
                 <p className="text-sm text-center text-gray-500">
                   Use your device's biometric authentication to create a passkey
                 </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isRegistering}
+                />
+                {error && <p className="text-sm text-red-500">{error}</p>}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
