@@ -13,13 +13,13 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 
 interface PollOption {
-  option_id: string;
+  optionId: string;
   option_name: string;
   votes: number;
 }
 
 interface Poll {
-  poll_id: string;
+  pollId: string;
   name: string;
   is_multi: boolean;
   is_paused: boolean;
@@ -64,7 +64,7 @@ export default function ManagePolls() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {polls.map((poll) => (
-          <Card key={poll.poll_id}>
+          <Card key={poll.pollId}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <CardTitle className="text-xl">{poll.name}</CardTitle>
@@ -85,16 +85,14 @@ export default function ManagePolls() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => router.push(`/polls/manage/${poll.poll_id}`)}
+                    onClick={() => router.push(`/polls/manage/${poll.pollId}`)}
                   >
                     Edit
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      router.push(`/polls/${poll.poll_id}/results`)
-                    }
+                    onClick={() => router.push(`/polls/${poll.pollId}/results`)}
                   >
                     Results
                   </Button>

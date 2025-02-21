@@ -9,19 +9,39 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function PollPage({ params }: { params: { pollId: string } }) {
+export default function PollPage({
+  params,
+}: {
+  params: Promise<{ pollId: string }>;
+}) {
   const router = useRouter();
   const [poll, setPoll] = useState<Poll>();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [canVote, setCanVote] = useState(false);
+  const resolvedParams = React.use(params);
 
   useEffect(() => {
-    const fetchPoll = async () => {
+    const fetchPollData = async () => {
       try {
-        const response = await axiosInstance.get<ApiResponse<Poll>>(
-          `/api/polls/${params.pollId}`
-        );
-        setPoll(response.data.data);
+        const [pollResponse, canVoteResponse] = await Promise.all([
+          axiosInstance.get<ApiResponse<Poll>>(
+            `/api/polls/${resolvedParams.pollId}`
+          ),
+          axiosInstance.get<ApiResponse<boolean>>(
+            `/api/polls/${resolvedParams.pollId}/can-vote`
+          ),
+        ]);
+
+        setPoll(pollResponse.data.data);
+        setCanVote(canVoteResponse.data.data || false);
+
+        if (!canVoteResponse.data.data) {
+          toast.error(
+            canVoteResponse.data.message || "You cannot vote in this poll"
+          );
+          router.push(`/polls/${resolvedParams.pollId}/results`);
+        }
       } catch (err) {
         toast.error("Failed to load poll");
       } finally {
@@ -29,8 +49,8 @@ export default function PollPage({ params }: { params: { pollId: string } }) {
       }
     };
 
-    fetchPoll();
-  }, [params.pollId]);
+    fetchPollData();
+  }, [resolvedParams.pollId, router]);
 
   const handleVote = async () => {
     if (!selectedOptions.length) {
@@ -38,18 +58,22 @@ export default function PollPage({ params }: { params: { pollId: string } }) {
       return;
     }
 
+    if (!canVote) {
+      toast.error("You cannot vote in this poll");
+      return;
+    }
+
     try {
-      // For multi-select polls, we need to make multiple requests
       await Promise.all(
         selectedOptions.map((optionId) =>
           axiosInstance.get(
-            `/api/polls/${params.pollId}/vote?optionId=${optionId}`
+            `/api/polls/${resolvedParams.pollId}/vote?optionId=${optionId}`
           )
         )
       );
 
       toast.success("Vote cast successfully!");
-      router.push(`/polls/${params.pollId}/results`);
+      router.push(`/polls/${resolvedParams.pollId}/results`);
     } catch (err) {
       toast.error("Failed to cast vote");
     }
@@ -59,8 +83,8 @@ export default function PollPage({ params }: { params: { pollId: string } }) {
     return <div>Loading...</div>;
   }
 
-  if (!poll) {
-    return <div>Poll not found</div>;
+  if (!poll || !canVote) {
+    return <div>Poll not found or you cannot vote</div>;
   }
 
   return (

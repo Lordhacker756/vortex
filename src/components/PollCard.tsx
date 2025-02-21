@@ -20,6 +20,8 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
   const startDate = new Date(poll.startDate).toLocaleDateString();
   const endDate = new Date(poll.endDate).toLocaleDateString();
 
+  console.log("PollCard -> poll", poll);
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -27,7 +29,7 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
           <CardTitle className="text-xl">{poll.name}</CardTitle>
           <div className="flex gap-2">
             {poll.isMulti && (
-              <Badge >
+              <Badge>
                 <p className="text-xs">Multi-select</p>
               </Badge>
             )}

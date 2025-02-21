@@ -10,17 +10,18 @@ import { Label } from "@/components/ui/label";
 export default function PollResultsPage({
   params,
 }: {
-  params: { pollId: string };
+  params: Promise<{ pollId: string }>;
 }) {
   const [poll, setPoll] = useState<Poll>();
   const [liveMode, setLiveMode] = useState(false);
   const [options, setOptions] = useState<PollOption[]>([]);
+  const resolvedParams = React.use(params);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
         const response = await axiosInstance.get<ApiResponse<Poll>>(
-          `/api/polls/${params.pollId}/results`
+          `/api/polls/${resolvedParams.pollId}/results`
         );
         setPoll(response.data.data);
         setOptions(response.data.data?.options || []);
@@ -32,13 +33,13 @@ export default function PollResultsPage({
     if (!liveMode) {
       fetchResults();
     }
-  }, [params.pollId, liveMode]);
+  }, [resolvedParams.pollId, liveMode]);
 
   useEffect(() => {
     if (!liveMode) return;
 
     const eventSource = new EventSource(
-      `http://localhost:9000/api/polls/${params.pollId}/results?live=true`,
+      `http://localhost:9000/api/polls/${resolvedParams.pollId}/results?live=true`,
       {
         withCredentials: true,
       }
@@ -52,7 +53,7 @@ export default function PollResultsPage({
     return () => {
       eventSource.close();
     };
-  }, [params.pollId, liveMode]);
+  }, [resolvedParams.pollId, liveMode]);
 
   const totalVotes = options.reduce((sum, option) => sum + option.votes, 0);
 
