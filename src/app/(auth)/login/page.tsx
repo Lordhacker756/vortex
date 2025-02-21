@@ -8,31 +8,81 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Fingerprint } from "lucide-react";
 import Link from "next/link";
+import axiosInstance from "@/lib/axios";
+import {
+  base64URLToBuffer,
+  transformCredential,
+  transformLoginVerifyCredential,
+} from "@/lib/utils";
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
 
   const handlePasskeyLogin = async () => {
-    setIsLoading(true);
     try {
+      if (!username.trim()) {
+        setError("Username is required");
+        return;
+      }
+      setError("");
+      setIsLoading(true);
+
+      // Get the authentication options from the server
+      const response = await axiosInstance.get("/auth/login", {
+        params: {
+          username: username.trim(),
+        },
+      });
+
+      console.log("Login cookies:", document.cookie);
+
+      let challengeObj = response.data;
+
+      // Convert base64url encoded challenge to ArrayBuffer
+      const challengeBuffer = base64URLToBuffer(
+        challengeObj.publicKey.challenge
+      );
+
+      // Convert allowCredentials ids to ArrayBuffer if present
+      const allowCredentials =
+        challengeObj.publicKey.allowCredentials?.map((credential) => ({
+          ...credential,
+          id: base64URLToBuffer(credential.id),
+          transports: undefined,
+        })) || [];
+
+      // Prepare the options with proper ArrayBuffer conversions
       const options = {
         publicKey: {
-          challenge: new Uint8Array(32),
-          rpId: window.location.hostname,
-          allowCredentials: [], // This should be populated with the user's credentials
-          userVerification: "preferred",
+          ...challengeObj.publicKey,
+          challenge: challengeBuffer,
+          allowCredentials,
         },
       };
 
-      const credential = await navigator.credentials.get({
-        publicKey: options.publicKey,
-      });
-      console.log("Credential verified:", credential);
+      const credential = await navigator.credentials.get(options);
+      const transformedCredential = transformLoginVerifyCredential(credential);
+
+      // Send the credential to the server for verification
+      const verificationResponse = await axiosInstance.post(
+        "/auth/verify-login",
+        transformedCredential
+      );
+
+      console.log("Verification cookies:", document.cookie);
+      console.log("Login response:", verificationResponse.data);
+
+      // redict to the dashboard
+      window.location.href = "/polls";
     } catch (error) {
       console.error("Error logging in with passkey:", error);
+      setError("Failed to sign in with passkey");
     } finally {
       setIsLoading(false);
     }
@@ -62,6 +112,16 @@ const LoginPage = () => {
                 <p className="text-sm text-center text-gray-500">
                   Use your device's biometric authentication to sign in
                 </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+                />
+                {error && <p className="text-sm text-red-500">{error}</p>}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
