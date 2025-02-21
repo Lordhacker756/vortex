@@ -13,7 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Fingerprint } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/lib/axios";
-import { base64URLToBuffer, transformCredential, transformLoginVerifyCredential } from "@/lib/utils";
+import {
+  base64URLToBuffer,
+  transformCredential,
+  transformLoginVerifyCredential,
+} from "@/lib/utils";
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -73,6 +77,9 @@ const LoginPage = () => {
 
       console.log("Verification cookies:", document.cookie);
       console.log("Login response:", verificationResponse.data);
+
+      // redict to the dashboard
+      window.location.href = "/polls";
     } catch (error) {
       console.error("Error logging in with passkey:", error);
       setError("Failed to sign in with passkey");
