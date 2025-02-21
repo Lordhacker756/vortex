@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -20,14 +22,22 @@ import {
 } from "@/lib/utils";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("userId")) {
+      router.push("/polls");
+    }
+  }, [router]);
 
   const handlePasskeyLogin = async () => {
     try {
       if (!username.trim()) {
         setError("Username is required");
+        toast.error("Username is required");
         return;
       }
       setError("");
@@ -80,11 +90,12 @@ const LoginPage = () => {
 
       localStorage.setItem("userId", verificationResponse.data.user_id);
 
-      // redict to the dashboard
-      window.location.href = "/polls";
+      toast.success("Successfully logged in!");
+      router.push("/polls");
     } catch (error) {
       console.error("Error logging in with passkey:", error);
       setError("Failed to sign in with passkey");
+      toast.error("Failed to sign in with passkey");
     } finally {
       setIsLoading(false);
     }

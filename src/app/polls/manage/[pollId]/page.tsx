@@ -9,14 +9,15 @@ import { useEffect, useState } from "react";
 import { DatePicker } from "@/components/custom/date-picker";
 import { useParams, useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
 
 interface Poll {
   poll_id: string;
   name: string;
-  is_multi: boolean;
-  start_date: string;
-  end_date: string;
-  options: Array<{ option_id: string; option_name: string; votes: number }>;
+  isMulti: boolean;
+  startDate: string;
+  endDate: string;
+  options: Array<{ optionId: string; optionName: string; votes: number }>;
 }
 
 export default function EditPoll() {
@@ -35,11 +36,17 @@ export default function EditPoll() {
   const fetchPoll = async () => {
     try {
       const response = await axiosInstance.get(`/api/polls/${params.pollId}`);
-      setPoll(response.data.data);
-      setName(response.data.data.name);
-      setIsMulti(response.data.data.is_multi);
-      setStartDate(new Date(response.data.data.start_date));
-      setEndDate(new Date(response.data.data.end_date));
+      const pollData = response.data.data;
+      setPoll(pollData);
+      setName(pollData.name);
+      setIsMulti(pollData.isMulti);
+
+      // Parse the date strings properly
+      const startDateObj = new Date(pollData.startDate.split(" ")[0]); // Take only the date part
+      const endDateObj = new Date(pollData.endDate.split(" ")[0]); // Take only the date part
+
+      setStartDate(startDateObj);
+      setEndDate(endDateObj);
     } catch (error) {
       console.error("Error fetching poll:", error);
     }
@@ -48,20 +55,56 @@ export default function EditPoll() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Format dates before sending to API
+      const formattedStartDate = startDate?.toISOString();
+      const formattedEndDate = endDate?.toISOString();
+
       const response = await axiosInstance.patch(
         `/api/polls/${params.pollId}`,
         {
           name,
           isMulti,
-          startDate,
-          endDate,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
         }
       );
       if (response.status === 200) {
+        toast.success("Poll updated successfully!");
         router.push("/polls/manage");
       }
     } catch (error) {
+      toast.error("Failed to update poll");
       console.error("Error updating poll:", error);
+    }
+  };
+
+  const handleClosePoll = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/api/polls/${params.pollId}/close`
+      );
+      if (response.status === 200) {
+        toast.success("Poll closed successfully!");
+        router.push("/polls/manage");
+      }
+    } catch (error) {
+      toast.error("Failed to close poll");
+      console.error("Error closing poll:", error);
+    }
+  };
+
+  const handleResetPoll = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/api/polls/${params.pollId}/reset`
+      );
+      if (response.status === 200) {
+        toast.success("Poll votes reset successfully!");
+        fetchPoll(); // Refresh the poll data
+      }
+    } catch (error) {
+      toast.error("Failed to reset poll votes");
+      console.error("Error resetting poll:", error);
     }
   };
 
@@ -116,10 +159,10 @@ export default function EditPoll() {
               <Label>Current Options</Label>
               {poll.options.map((option) => (
                 <div
-                  key={option.option_id}
+                  key={option.optionId}
                   className="flex items-center space-x-2"
                 >
-                  <Input disabled value={option.option_name} />
+                  <Input disabled value={option.optionName} />
                   <span className="text-sm text-muted-foreground">
                     Votes: {option.votes}
                   </span>
@@ -127,7 +170,21 @@ export default function EditPoll() {
               ))}
             </div>
 
-            <div className="flex space-x-2">
+            <div className="flex space-x-10">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleClosePoll}
+              >
+                Close Poll
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleResetPoll}
+              >
+                Reset Votes
+              </Button>
               <Button type="submit">Save Changes</Button>
               <Button
                 type="button"

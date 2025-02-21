@@ -1,4 +1,7 @@
 "use client";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -17,14 +20,22 @@ import { base64URLToBuffer, transformCredential } from "@/lib/utils";
 import { ServerPublicKeyCredentialCreationOptions } from "@/lib/types";
 
 const RegisterPage = () => {
+  const router = useRouter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("userId")) {
+      router.push("/polls");
+    }
+  }, [router]);
 
   const handlePasskeyRegistration = async () => {
     try {
       if (!username.trim()) {
         setError("Username is required");
+        toast.error("Username is required");
         return;
       }
       setError("");
@@ -86,9 +97,13 @@ const RegisterPage = () => {
       console.log("Verification cookies:", document.cookie);
 
       console.log("Attestation response:", attestationResponse.data);
+      toast.success("Successfully registered! Please log in.");
+
+      router.push("/login");
     } catch (error) {
       console.error("Error registering passkey:", error);
       setError("Failed to register passkey");
+      toast.error("Failed to register passkey");
     } finally {
       setIsRegistering(false);
     }

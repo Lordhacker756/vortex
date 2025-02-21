@@ -8,6 +8,7 @@ import { useState } from "react";
 import { DatePicker } from "@/components/custom/date-picker";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
 
 export default function NewPoll() {
   const [options, setOptions] = useState<string[]>(["", ""]);
@@ -28,24 +29,45 @@ export default function NewPoll() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates");
+      return;
+    }
+
+    const pollName = (e.target as HTMLFormElement).name.value;
+    if (!pollName.trim()) {
+      toast.error("Please enter a poll name");
+      return;
+    }
+
+    const validOptions = options.filter((opt) => opt.trim() !== "");
+    if (validOptions.length < 2) {
+      toast.error("Please add at least two valid options");
+      return;
+    }
 
     const userId = localStorage.getItem("userId");
+    if (!userId) {
+      toast.error("User authentication error");
+      return;
+    }
 
     try {
       const response = await axiosInstance.post("/api/polls", {
-        name: (e.target as HTMLFormElement).name.value,
+        name: pollName,
         createdBy: userId,
         isMulti,
         startDate,
         endDate,
-        options: options.filter((opt) => opt.trim() !== ""),
+        options: validOptions,
       });
 
       if (response.status === 200) {
+        toast.success("Poll created successfully!");
         router.push("/polls/manage");
       }
     } catch (error) {
+      toast.error("Failed to create poll");
       console.error("Error creating poll:", error);
     }
   };

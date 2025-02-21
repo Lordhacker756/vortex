@@ -92,7 +92,9 @@ export default function ManagePolls() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => router.push(`/polls/${poll.pollId}/results`)}
+                    onClick={() =>
+                      router.push(`/polls/${poll.pollId}/results`)
+                    }
                   >
                     Results
                   </Button>

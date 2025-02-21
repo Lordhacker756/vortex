@@ -22,6 +22,8 @@ export default function PollPage({
   const resolvedParams = React.use(params);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchPollData = async () => {
       try {
         const [pollResponse, canVoteResponse] = await Promise.all([
@@ -33,23 +35,38 @@ export default function PollPage({
           ),
         ]);
 
-        setPoll(pollResponse.data.data);
-        setCanVote(canVoteResponse.data.data || false);
+        if (mounted) {
+          setPoll(pollResponse.data.data);
+          setCanVote(canVoteResponse.data.data || false);
 
-        if (!canVoteResponse.data.data) {
-          toast.error(
-            canVoteResponse.data.message || "You cannot vote in this poll"
-          );
-          router.push(`/polls/${resolvedParams.pollId}/results`);
+          if (!canVoteResponse.data.data) {
+            // Only show toast if user actually cannot vote
+            toast.error(
+              canVoteResponse.data.message || "You cannot vote in this poll",
+              {
+                id: `cannot-vote-${resolvedParams.pollId}`, // Add unique ID to prevent duplicate toasts
+              }
+            );
+          }
         }
       } catch (err) {
-        toast.error("Failed to load poll");
+        if (mounted) {
+          toast.error("Failed to load poll", {
+            id: `load-error-${resolvedParams.pollId}`, // Add unique ID to prevent duplicate toasts
+          });
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchPollData();
+
+    return () => {
+      mounted = false;
+    };
   }, [resolvedParams.pollId, router]);
 
   const handleVote = async () => {
@@ -83,8 +100,14 @@ export default function PollPage({
     return <div>Loading...</div>;
   }
 
-  if (!poll || !canVote) {
-    return <div>Poll not found or you cannot vote</div>;
+  if (!poll) {
+    return (
+      <div className="container mx-auto p-2 flex items-center justify-center h-screen">
+        <h1 className="text-lg font-bold text-center text-red-500">
+          No poll found for the given ID
+        </h1>
+      </div>
+    );
   }
 
   return (
@@ -140,8 +163,18 @@ export default function PollPage({
               ))}
             </RadioGroup>
           )}
-          <Button onClick={handleVote} className="mt-4 w-full">
-            Cast Vote
+          <Button
+            onClick={handleVote}
+            className="mt-4 w-full"
+            disabled={!canVote}
+          >
+            {canVote
+              ? "Cast Vote"
+              : poll.isClosed
+              ? "This poll is already closed!"
+              : poll.isPaused
+              ? "This poll is paued"
+              : "You've already voted!"}
           </Button>
         </CardContent>
       </Card>

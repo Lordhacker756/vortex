@@ -6,6 +6,27 @@ import React, { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+// Add colors for the charts
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884d8",
+  "#82ca9d",
+];
 
 export default function PollResultsPage({
   params,
@@ -55,10 +76,17 @@ export default function PollResultsPage({
     };
   }, [resolvedParams.pollId, liveMode]);
 
+  const formatChartData = (options: PollOption[]) => {
+    return options.map((option) => ({
+      name: option.optionName,
+      votes: option.votes,
+    }));
+  };
+
   const totalVotes = options.reduce((sum, option) => sum + option.votes, 0);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 space-y-4">
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -74,7 +102,56 @@ export default function PollResultsPage({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Pie Chart */}
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={formatChartData(options)}
+                    dataKey="votes"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {options.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Bar Chart */}
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={formatChartData(options)}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="votes" fill="#8884d8">
+                    {options.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Existing progress bars */}
+          <div className="space-y-6 mt-6">
             {options.map((option) => {
               const percentage = totalVotes
                 ? (option.votes / totalVotes) * 100

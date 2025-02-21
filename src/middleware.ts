@@ -8,14 +8,14 @@ export function middleware(request: NextRequest) {
         cookies: request.cookies.getAll(),
         timestamp: new Date().toISOString()
     });
-
+    const webauthnCookie = request.cookies.get('webauthnrs');
     if (request.nextUrl.pathname.startsWith('/polls')) {
-        const webauthnCookie = request.cookies.get('webauthnrs');
 
         if (!webauthnCookie) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
     }
+
 
     return NextResponse.next();
 }
