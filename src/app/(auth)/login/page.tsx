@@ -34,7 +34,7 @@ const LoginPage = () => {
       setIsLoading(true);
 
       // Get the authentication options from the server
-      const response = await axiosInstance.get("/auth/login", {
+      const response = await axiosInstance.get("/api/auth/login", {
         params: {
           username: username.trim(),
         },
@@ -71,12 +71,14 @@ const LoginPage = () => {
 
       // Send the credential to the server for verification
       const verificationResponse = await axiosInstance.post(
-        "/auth/verify-login",
+        "/api/auth/verify-login",
         transformedCredential
       );
 
       console.log("Verification cookies:", document.cookie);
       console.log("Login response:", verificationResponse.data);
+
+      localStorage.setItem("userId", verificationResponse.data.user_id);
 
       // redict to the dashboard
       window.location.href = "/polls";

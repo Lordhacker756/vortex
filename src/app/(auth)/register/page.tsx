@@ -29,7 +29,7 @@ const RegisterPage = () => {
       }
       setError("");
 
-      const response = await axiosInstance.get("/auth/register", {
+      const response = await axiosInstance.get("/api/auth/register", {
         params: {
           username: username.trim(),
         },
@@ -79,7 +79,7 @@ const RegisterPage = () => {
 
       // Here you would typically send the credential back to your server
       const attestationResponse = await axiosInstance.post(
-        "/auth/verify-register",
+        "/api/auth/verify-register",
         transformedCredential
       );
 
