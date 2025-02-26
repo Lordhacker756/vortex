@@ -1,6 +1,7 @@
 <div align="center">
 
 #  Vortex ⚡️
+<img src="/vortex/src/app/og-image.png" width="400" height="300">
 
 ### Experience Real-Time Voting Like Never Before
 
