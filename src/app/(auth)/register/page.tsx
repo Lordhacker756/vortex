@@ -34,6 +34,7 @@ const RegisterPage = () => {
   }, [router]);
 
   const handlePasskeyRegistration = async () => {
+    let timer: NodeJS.Timeout; // Add timer variable
     try {
       if (!username.trim()) {
         setError("Username is required");
@@ -42,8 +43,8 @@ const RegisterPage = () => {
       }
       setError("");
 
-      // Add timeout to show dialog after 5 seconds
-      setTimeout(() => {
+      timer = setTimeout(() => {
+        // Store timer reference
         setShowDialog(true);
       }, 5000);
 
@@ -53,10 +54,12 @@ const RegisterPage = () => {
             username: username.trim(),
           },
         })
-        .finally(() => {
+        .then(() => {
+          setShowDialog(false);
+        })
+        .catch(() => {
           setShowDialog(false);
         });
-
       console.log("Registration cookies:", document.cookie);
 
       let challengeObj: ServerPublicKeyCredentialCreationOptions =
@@ -113,16 +116,18 @@ const RegisterPage = () => {
       router.push("/login");
     } catch (error) {
       console.error("Error registering passkey:", error);
-      setError("Failed to register passkey");
+      setError("Failed to register passkey: " + error.message);
       toast.error("Failed to register passkey");
+      clearTimeout(timer); // Add timer cleanup here
     } finally {
+      setShowDialog(false);
       setIsRegistering(false);
     }
   };
 
   return (
     <div className="flex min-h-screen bg-black">
-      <ServerStartingDialog open={showDialog} />
+      <ServerStartingDialog open={showDialog} setOpen={setShowDialog} />
       {/* Left side - About Vortex */}
       <div className="flex-1 flex flex-col justify-center px-12">
         <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>

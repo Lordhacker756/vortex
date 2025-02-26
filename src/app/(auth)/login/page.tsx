@@ -24,6 +24,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+  let timer: NodeJS.Timeout;
 
   useEffect(() => {
     if (localStorage.getItem("userId")) {
@@ -41,22 +42,16 @@ const LoginPage = () => {
       setError("");
       setIsLoading(true);
 
-      setTimeout(() => {
+      timer = setTimeout(() => {
         setShowDialog(true);
       }, 5000);
 
       // Get the authentication options from the server
-      const response = await axiosInstance
-        .get("/api/auth/login", {
-          params: {
-            username: username.trim(),
-          },
-        })
-        .finally(() => {
-          setShowDialog(false);
-        });
-
-      console.log("Login cookies:", document.cookie);
+      const response = await axiosInstance.get("/api/auth/login", {
+        params: {
+          username: username.trim(),
+        },
+      });
 
       let challengeObj = response.data;
 
@@ -100,16 +95,18 @@ const LoginPage = () => {
       setIsLoading(false);
       router.push("/polls");
     } catch (error) {
-      console.error("Error logging in with passkey:", error);
-      setError("Failed to sign in with passkey");
-      toast.error("Failed to sign in with passkey");
+      console.error("Error logging in with passkey:" + error.message);
+      setError("Failed to sign in with passkey - " + error.message);
+      clearTimeout(timer); // Add timer cleanup here
     } finally {
+      setShowDialog(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen bg-black">
-      <ServerStartingDialog open={showDialog} />
+      <ServerStartingDialog open={showDialog} setOpen={setShowDialog} />
       {/* Left side - About Vortex */}
       <div className="flex-1 flex flex-col justify-center px-12">
         <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>

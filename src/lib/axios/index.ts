@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+let prod = true
+const baseURL = prod ? 'https://vortex-api-koba.onrender.com' : 'http://localhost:9000';
+
 // Create axios instance with base configuration
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000',
+    baseURL: baseURL,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
@@ -45,8 +48,12 @@ axiosInstance.interceptors.response.use((response) => {
     console.error('❌ Response Error:', {
         status: error.response?.status,
         data: error.response?.data,
-        message: error.message
+        message: error.response?.data?.message
     });
+
+    error.status = error.response?.status;
+    error.data = error.response?.data;
+    error.message = error.response?.data?.message;
 
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
