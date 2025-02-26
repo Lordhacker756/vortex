@@ -1,4 +1,7 @@
 "use client";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -15,25 +18,44 @@ import Link from "next/link";
 import axiosInstance from "@/lib/axios";
 import { base64URLToBuffer, transformCredential } from "@/lib/utils";
 import { ServerPublicKeyCredentialCreationOptions } from "@/lib/types";
+import ServerStartingDialog from "@/components/custom/server-starting";
 
 const RegisterPage = () => {
+  const router = useRouter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("userId")) {
+      router.push("/polls");
+    }
+  }, [router]);
 
   const handlePasskeyRegistration = async () => {
     try {
       if (!username.trim()) {
         setError("Username is required");
+        toast.error("Username is required");
         return;
       }
       setError("");
 
-      const response = await axiosInstance.get("/auth/register", {
-        params: {
-          username: username.trim(),
-        },
-      });
+      // Add timeout to show dialog after 5 seconds
+      setTimeout(() => {
+        setShowDialog(true);
+      }, 5000);
+
+      const response = await axiosInstance
+        .get("/api/auth/register", {
+          params: {
+            username: username.trim(),
+          },
+        })
+        .finally(() => {
+          setShowDialog(false);
+        });
 
       console.log("Registration cookies:", document.cookie);
 
@@ -79,16 +101,20 @@ const RegisterPage = () => {
 
       // Here you would typically send the credential back to your server
       const attestationResponse = await axiosInstance.post(
-        "/auth/verify-register",
+        "/api/auth/verify-register",
         transformedCredential
       );
 
       console.log("Verification cookies:", document.cookie);
 
       console.log("Attestation response:", attestationResponse.data);
+      toast.success("Successfully registered! Please log in.");
+
+      router.push("/login");
     } catch (error) {
       console.error("Error registering passkey:", error);
       setError("Failed to register passkey");
+      toast.error("Failed to register passkey");
     } finally {
       setIsRegistering(false);
     }
@@ -96,6 +122,7 @@ const RegisterPage = () => {
 
   return (
     <div className="flex min-h-screen bg-black">
+      <ServerStartingDialog open={showDialog} />
       {/* Left side - About Vortex */}
       <div className="flex-1 flex flex-col justify-center px-12">
         <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>

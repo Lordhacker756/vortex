@@ -41,12 +41,31 @@ axiosInstance.interceptors.response.use((response) => {
     });
 
     return response;
-}, (error) => {
+}, async (error) => {
     console.error('❌ Response Error:', {
         status: error.response?.status,
         data: error.response?.data,
         message: error.message
     });
+
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401) {
+        // Clear localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.clear();
+        }
+
+        // Make a request to clear the cookie
+        try {
+            await axios.post('/api/auth/logout', {}, { withCredentials: true });
+        } catch (logoutError) {
+            console.error('Error during logout:', logoutError);
+        }
+
+        // Redirect to login page
+        window.location.href = '/login';
+    }
+
     return Promise.reject(error);
 });
 

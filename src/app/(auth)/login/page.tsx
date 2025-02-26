@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -13,32 +15,46 @@ import { Button } from "@/components/ui/button";
 import { Fingerprint } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/lib/axios";
-import {
-  base64URLToBuffer,
-  transformCredential,
-  transformLoginVerifyCredential,
-} from "@/lib/utils";
+import { base64URLToBuffer, transformLoginVerifyCredential } from "@/lib/utils";
+import ServerStartingDialog from "@/components/custom/server-starting";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("userId")) {
+      router.push("/polls");
+    }
+  }, [router]);
 
   const handlePasskeyLogin = async () => {
     try {
       if (!username.trim()) {
         setError("Username is required");
+        toast.error("Username is required");
         return;
       }
       setError("");
       setIsLoading(true);
 
+      setTimeout(() => {
+        setShowDialog(true);
+      }, 5000);
+
       // Get the authentication options from the server
-      const response = await axiosInstance.get("/auth/login", {
-        params: {
-          username: username.trim(),
-        },
-      });
+      const response = await axiosInstance
+        .get("/api/auth/login", {
+          params: {
+            username: username.trim(),
+          },
+        })
+        .finally(() => {
+          setShowDialog(false);
+        });
 
       console.log("Login cookies:", document.cookie);
 
@@ -71,25 +87,29 @@ const LoginPage = () => {
 
       // Send the credential to the server for verification
       const verificationResponse = await axiosInstance.post(
-        "/auth/verify-login",
+        "/api/auth/verify-login",
         transformedCredential
       );
 
       console.log("Verification cookies:", document.cookie);
       console.log("Login response:", verificationResponse.data);
 
-      // redict to the dashboard
-      window.location.href = "/polls";
+      localStorage.setItem("userId", verificationResponse.data.user_id);
+
+      toast.success("Successfully logged in!");
+      setIsLoading(false);
+      router.push("/polls");
     } catch (error) {
       console.error("Error logging in with passkey:", error);
       setError("Failed to sign in with passkey");
+      toast.error("Failed to sign in with passkey");
     } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen bg-black">
+      <ServerStartingDialog open={showDialog} />
       {/* Left side - About Vortex */}
       <div className="flex-1 flex flex-col justify-center px-12">
         <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>
