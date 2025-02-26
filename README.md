@@ -1,7 +1,7 @@
 <div align="center">
 
 #  Vortex ⚡️
-<img src="./preview.png" width="400" height="300">
+<img src="./preview.png" width="100%" height="auto">
 
 ### Experience Real-Time Voting Like Never Before
 
