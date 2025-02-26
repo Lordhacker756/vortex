@@ -33,8 +33,8 @@ const RegisterPage = () => {
     }
   }, [router]);
 
+  let timer: NodeJS.Timeout; // Add timer variable
   const handlePasskeyRegistration = async () => {
-    let timer: NodeJS.Timeout; // Add timer variable
     try {
       if (!username.trim()) {
         setError("Username is required");
@@ -55,12 +55,13 @@ const RegisterPage = () => {
           },
         })
         .then(() => {
+          clearTimeout(timer); // Clear timer on success
           setShowDialog(false);
         })
         .catch(() => {
           setShowDialog(false);
         });
-      console.log("Registration cookies:", document.cookie);
+      console.log("Resgister resposne:: ", response);
 
       let challengeObj: ServerPublicKeyCredentialCreationOptions =
         response.data;
