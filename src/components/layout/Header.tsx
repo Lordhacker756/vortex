@@ -7,8 +7,8 @@ export function Header() {
   return (
     <div className="h-16 fixed inset-y-0 w-full z-50">
       <div className="h-full w-full bg-white/50 backdrop-blur-sm border-b flex items-center justify-between px-4">
-        <div className="flex items-center">
-          <p className="text-xl font-semibold">ボルテックス ⚡️</p>
+        <div className="flex items-center w-full">
+          <p className="text-xl font-semibold text-center w-full">ボルテックス ⚡️</p>
         </div>
 
         {/* Desktop Navigation */}
