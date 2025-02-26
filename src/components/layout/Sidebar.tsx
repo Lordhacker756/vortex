@@ -8,7 +8,10 @@ import {
   ListChecks,
   PlusCircle,
   Settings,
+  LogOut,
 } from "lucide-react";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 const routes = [
   {
@@ -33,6 +36,22 @@ const routes = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      // Clear localStorage
+      localStorage.clear();
+
+      // Make request to clear the cookie
+      await axios.post("/api/auth/logout", {}, { withCredentials: true });
+
+      // Redirect to login page
+      router.push("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
@@ -59,6 +78,18 @@ export function Sidebar() {
             </Link>
           ))}
         </div>
+      </div>
+      {/* Add Logout Button */}
+      <div className="px-3 py-2">
+        <button
+          onClick={handleLogout}
+          className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition text-zinc-400"
+        >
+          <div className="flex items-center flex-1">
+            <LogOut className="h-5 w-5 mr-3 text-red-500" />
+            Logout
+          </div>
+        </button>
       </div>
     </div>
   );

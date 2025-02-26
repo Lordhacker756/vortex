@@ -18,12 +18,14 @@ import Link from "next/link";
 import axiosInstance from "@/lib/axios";
 import { base64URLToBuffer, transformCredential } from "@/lib/utils";
 import { ServerPublicKeyCredentialCreationOptions } from "@/lib/types";
+import ServerStartingDialog from "@/components/custom/server-starting";
 
 const RegisterPage = () => {
   const router = useRouter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("userId")) {
@@ -40,11 +42,20 @@ const RegisterPage = () => {
       }
       setError("");
 
-      const response = await axiosInstance.get("/api/auth/register", {
-        params: {
-          username: username.trim(),
-        },
-      });
+      // Add timeout to show dialog after 5 seconds
+      setTimeout(() => {
+        setShowDialog(true);
+      }, 5000);
+
+      const response = await axiosInstance
+        .get("/api/auth/register", {
+          params: {
+            username: username.trim(),
+          },
+        })
+        .finally(() => {
+          setShowDialog(false);
+        });
 
       console.log("Registration cookies:", document.cookie);
 
@@ -111,6 +122,7 @@ const RegisterPage = () => {
 
   return (
     <div className="flex min-h-screen bg-black">
+      <ServerStartingDialog open={showDialog} />
       {/* Left side - About Vortex */}
       <div className="flex-1 flex flex-col justify-center px-12">
         <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>
