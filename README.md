@@ -63,8 +63,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-### Made with ❤️ by the Vortex Team
-
-[Website](https://vortex-voting.com) · [Documentation](https://docs.vortex-voting.com) · [Report Bug](https://github.com/yourusername/vortex/issues)
+### Made with ❤️ by ウトカルシュ
 
 </div>
