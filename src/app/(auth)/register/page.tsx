@@ -48,20 +48,12 @@ const RegisterPage = () => {
         setShowDialog(true);
       }, 5000);
 
-      const response = await axiosInstance
-        .get("/api/auth/register", {
-          params: {
-            username: username.trim(),
-          },
-        })
-        .then((res) => {
-          console.log("Reponse from register:: ", res);
-          clearTimeout(timer); // Clear timer on success
-          setShowDialog(false);
-        })
-        .catch(() => {
-          setShowDialog(false);
-        });
+      const response = await axiosInstance.get("/api/auth/register", {
+        params: {
+          username: username.trim(),
+        },
+      });
+      clearTimeout(timer); // Clear timer on success
       console.log("Resgister resposne:: ", response);
 
       let challengeObj: ServerPublicKeyCredentialCreationOptions =

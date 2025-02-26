@@ -47,15 +47,12 @@ const LoginPage = () => {
       }, 5000);
 
       // Get the authentication options from the server
-      const response = await axiosInstance
-        .get("/api/auth/login", {
-          params: {
-            username: username.trim(),
-          },
-        })
-        .then(() => {
-          clearTimeout(timer);
-        });
+      const response = await axiosInstance.get("/api/auth/login", {
+        params: {
+          username: username.trim(),
+        },
+      });
+      clearTimeout(timer);
 
       let challengeObj = response.data;
 
