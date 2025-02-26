@@ -54,7 +54,8 @@ const RegisterPage = () => {
             username: username.trim(),
           },
         })
-        .then(() => {
+        .then((res) => {
+          console.log("Reponse from register:: ", res);
           clearTimeout(timer); // Clear timer on success
           setShowDialog(false);
         })
