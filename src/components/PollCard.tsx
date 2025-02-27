@@ -20,14 +20,12 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
   const startDate = new Date(poll.startDate).toLocaleDateString();
   const endDate = new Date(poll.endDate).toLocaleDateString();
 
-  console.log("PollCard -> poll", poll);
-
   return (
-    <Card className="w-full">
+    <Card className="w-full transition-all hover:shadow-md">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl">{poll.name}</CardTitle>
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <CardTitle className="text-xl truncate">{poll.name}</CardTitle>
+          <div className="flex flex-wrap gap-2">
             {poll.isMulti && (
               <Badge>
                 <p className="text-xs">Multi-select</p>
@@ -42,7 +40,7 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-col sm:flex-row gap-2 mt-4">
           <Link href={`/polls/${poll.pollId}`} className="flex-1">
             <Button className="w-full" variant="secondary">
               View Poll

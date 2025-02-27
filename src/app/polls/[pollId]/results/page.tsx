@@ -1,66 +1,54 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ApiResponse, Poll, PollOption } from "@/types/poll";
+import { Poll, PollOption } from "@/types/poll";
 import axiosInstance from "@/lib/axios";
 import React, { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-// Add colors for the charts
-const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884d8",
-  "#82ca9d",
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { ResultsChart } from "@/components/custom/ResultsChart";
+import { AlertCircle } from "lucide-react";
 
 export default function PollResultsPage({
   params,
 }: {
-  params: Promise<{ pollId: string }>;
+  params: { pollId: string };
 }) {
-  const [poll, setPoll] = useState<Poll>();
+  const [poll, setPoll] = useState<Poll | null>(null);
   const [liveMode, setLiveMode] = useState(false);
   const [options, setOptions] = useState<PollOption[]>([]);
-  const resolvedParams = React.use(params);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await axiosInstance.get<ApiResponse<Poll>>(
-          `/api/polls/${resolvedParams.pollId}/results`
+        setLoading(true);
+        const response = await axiosInstance.get(
+          `/api/polls/${params.pollId}/results`
         );
         setPoll(response.data.data);
         setOptions(response.data.data?.options || []);
+        setError(null);
       } catch (err) {
         console.error("Failed to fetch results:", err);
+        setError("Failed to load poll results");
+      } finally {
+        setLoading(false);
       }
     };
 
     if (!liveMode) {
       fetchResults();
     }
-  }, [resolvedParams.pollId, liveMode]);
+  }, [params.pollId, liveMode]);
 
   useEffect(() => {
     if (!liveMode) return;
 
     const eventSource = new EventSource(
-      `http://localhost:9000/api/polls/${resolvedParams.pollId}/results?live=true`,
+      `http://localhost:9000/api/polls/${params.pollId}/results?live=true`,
       {
         withCredentials: true,
       }
@@ -74,16 +62,43 @@ export default function PollResultsPage({
     return () => {
       eventSource.close();
     };
-  }, [resolvedParams.pollId, liveMode]);
-
-  const formatChartData = (options: PollOption[]) => {
-    return options.map((option) => ({
-      name: option.optionName,
-      votes: option.votes,
-    }));
-  };
+  }, [params.pollId, liveMode]);
 
   const totalVotes = options.reduce((sum, option) => sum + option.votes, 0);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 space-y-4">
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-3/4" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Skeleton className="h-[300px]" />
+              <Skeleton className="h-[300px]" />
+            </div>
+            <div className="space-y-6 mt-6">
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4 space-y-4">
+        <div className="p-4 border border-red-300 bg-red-50 text-red-700 rounded-md flex items-center gap-2">
+          <AlertCircle className="h-4 w-4" />
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -105,52 +120,16 @@ export default function PollResultsPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Pie Chart */}
             <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={formatChartData(options)}
-                    dataKey="votes"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label={({ name, percent }) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
-                    }
-                  >
-                    {options.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <ResultsChart options={options} chartType="pie" />
             </div>
 
             {/* Bar Chart */}
             <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={formatChartData(options)}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="votes" fill="#8884d8">
-                    {options.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <ResultsChart options={options} chartType="bar" />
             </div>
           </div>
 
-          {/* Existing progress bars */}
+          {/* Progress bars */}
           <div className="space-y-6 mt-6">
             {options.map((option) => {
               const percentage = totalVotes
