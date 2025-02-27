@@ -17,6 +17,7 @@ import Link from "next/link";
 import axiosInstance from "@/lib/axios";
 import { base64URLToBuffer, transformLoginVerifyCredential } from "@/lib/utils";
 import ServerStartingDialog from "@/components/custom/server-starting";
+import { setAuthToken } from "@/lib/auth";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -27,9 +28,9 @@ const LoginPage = () => {
   let timer: NodeJS.Timeout;
 
   useEffect(() => {
-    if (localStorage.getItem("userId")) {
-      router.push("/polls");
-    }
+    // if (localStorage.getItem("userId")) {
+    //   router.push("/polls");
+    // }
   }, [router]);
 
   const handlePasskeyLogin = async () => {
@@ -83,17 +84,14 @@ const LoginPage = () => {
 
       // Send the credential to the server for verification
       const verificationResponse = await axiosInstance.post(
-        "/api/auth/verify-login",
+        `/api/auth/verify-login/${encodeURIComponent(username)}`,
         transformedCredential
       );
 
-      console.log("Verification cookies:", document.cookie);
-      console.log("Login response:", verificationResponse.data);
-
-      localStorage.setItem("userId", verificationResponse.data.user_id);
+      const { token } = verificationResponse.data;
+      setAuthToken(token);
 
       toast.success("Successfully logged in!");
-      setIsLoading(false);
       router.push("/polls");
     } catch (error) {
       console.error("Error logging in with passkey:" + error.message);

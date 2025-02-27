@@ -28,9 +28,9 @@ const RegisterPage = () => {
   const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("userId")) {
-      router.push("/polls");
-    }
+    // if (localStorage.getItem("userId")) {
+    //   router.push("/polls");
+    // }
   }, [router]);
 
   let timer: NodeJS.Timeout; // Add timer variable
@@ -98,7 +98,7 @@ const RegisterPage = () => {
 
       // Here you would typically send the credential back to your server
       const attestationResponse = await axiosInstance.post(
-        "/api/auth/verify-register",
+        `/api/auth/verify-register/${encodeURIComponent(username)}`,
         transformedCredential
       );
 

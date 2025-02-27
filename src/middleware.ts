@@ -1,35 +1,27 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+    // Get the pathname from the request URL
+    const path = request.nextUrl.pathname;
+    console.log("Middleware running...")
 
-    // Force log to console
-    console.log('[Middleware Debug]', {
-        path: request.nextUrl.pathname,
-        cookies: request.cookies.getAll(),
-        timestamp: new Date().toISOString()
-    });
+    // Check if the path starts with /polls
+    if (path.startsWith('/polls')) {
+        // Get the authToken from cookies
+        const authToken = request.cookies.get('authToken');
 
-
-    const webauthnCookie = request.cookies.get('webauthnrs');
-    if (request.nextUrl.pathname.startsWith('/polls')) {
-
-        if (!webauthnCookie) {
+        // If there's no authToken, redirect to login
+        if (!authToken) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
     }
 
-
+    // If authToken exists or path doesn't start with /polls, continue with the request
     return NextResponse.next();
 }
 
+// Configure which paths the middleware should run on
 export const config = {
-    matcher: [
-        /*
-         * Match all paths starting with /polls
-         * Match exact /polls path
-         */
-        '/polls/:path*',
-        '/polls'
-    ]
-}
+    matcher: ['/polls/:path*']
+};
