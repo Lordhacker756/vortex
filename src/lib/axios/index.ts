@@ -1,12 +1,11 @@
 import axios from 'axios';
 
-let prod = true
+let prod = true;
 const baseURL = prod ? 'https://vortex-api-koba.onrender.com' : 'http://localhost:9000';
 
-// Create axios instance with base configuration
 const axiosInstance = axios.create({
     baseURL: baseURL,
-    withCredentials: true, // Important for cookies
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     },
