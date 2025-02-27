@@ -5,17 +5,19 @@ interface ErrorResponse {
     message: string;
     timestamp: string;
 }
-
-const baseUrl = "http://localhost:9000";
+const prod = true;
+const baseUrl = prod ? "https://vortex-api-koba.onrender.com" : "http://localhost:9000";
 
 const axiosInstance = axios.create({
     baseURL: baseUrl,
-    // Enable sending cookies with requests
-    withCredentials: true
 });
 
 // Request interceptor for logging
 axiosInstance.interceptors.request.use((config) => {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        config.headers.Authorization = `Bearer ${authToken}`;
+    }
     console.log('\n🚀 Request:', {
         url: config.url,
         method: config.method?.toUpperCase(),
@@ -42,11 +44,11 @@ axiosInstance.interceptors.response.use(
             timestamp: new Date().toISOString()
         };
         console.error('\n❌ Error:', errorResponse);
-        if (errorResponse.code == "401") {
-            axiosInstance.post('api/auth/logout').then(() => {
-                window.location.href = '/login';
-            })
-        }
+        // if (errorResponse.code == "401") {
+        //     axiosInstance.post('api/auth/logout').then(() => {
+        //         window.location.href = '/login';
+        //     })
+        // }
         return Promise.reject(errorResponse);
     }
 );

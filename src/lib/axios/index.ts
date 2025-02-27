@@ -1,19 +1,23 @@
 import axios from 'axios';
 
-let prod = true
+let prod = true;
 const baseURL = prod ? 'https://vortex-api-koba.onrender.com' : 'http://localhost:9000';
 
-// Create axios instance with base configuration
 const axiosInstance = axios.create({
     baseURL: baseURL,
-    withCredentials: true, // Important for cookies
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// Remove auth token injection since we're using cookies
 axiosInstance.interceptors.request.use((config) => {
+    // Get token from localStorage
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
     // Log request details
     console.log(`🚀 ${config.method?.toUpperCase()} Request:`, config.url);
     if (config.data) console.log('📦 Request Body:', config.data);

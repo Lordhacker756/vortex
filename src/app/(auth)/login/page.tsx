@@ -81,7 +81,10 @@ const LoginPage = () => {
         transformedCredential
       );
 
-      const { token } = verificationResponse.data;
+      const { token, userId } = verificationResponse.data;
+
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userId", userId);
 
       toast.success("Successfully logged in!");
       router.push("/polls");
