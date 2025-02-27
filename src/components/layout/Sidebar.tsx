@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const routes = [
   {
@@ -43,8 +44,11 @@ export function Sidebar() {
       // Clear localStorage
       localStorage.clear();
 
-      // Redirect to login page
-      router.replace("/login");
+      toast.success("Logged out successfully");
+      // Small delay before navigation
+      setTimeout(() => {
+        router.replace("/login");
+      }, 10);
     } catch (error) {
       console.error("Error during logout:", error);
     }
