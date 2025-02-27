@@ -44,7 +44,7 @@ export function Sidebar() {
       localStorage.clear();
 
       // Redirect to login page
-      router.push("/login");
+      router.replace("/login");
     } catch (error) {
       console.error("Error during logout:", error);
     }
