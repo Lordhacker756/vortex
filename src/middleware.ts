@@ -4,15 +4,16 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     // Get the pathname from the request URL
     const path = request.nextUrl.pathname;
-    console.log("Middleware running...")
 
     // Check if the path starts with /polls
     if (path.startsWith('/polls')) {
         // Get the authToken from cookies
         const authToken = request.cookies.get('authToken');
+        console.log("Middleware running...cookies:: ", authToken)
 
         // If there's no authToken, redirect to login
         if (!authToken) {
+            console.log("Middleware:: No cookie found redirect")
             return NextResponse.redirect(new URL('/login', request.url));
         }
     }

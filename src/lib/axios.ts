@@ -42,11 +42,11 @@ axiosInstance.interceptors.response.use(
             timestamp: new Date().toISOString()
         };
         console.error('\n❌ Error:', errorResponse);
-        if (errorResponse.code == "401") {
-            axiosInstance.post('api/auth/logout').then(() => {
-                window.location.href = '/login';
-            })
-        }
+        // if (errorResponse.code == "401") {
+        //     axiosInstance.post('api/auth/logout').then(() => {
+        //         window.location.href = '/login';
+        //     })
+        // }
         return Promise.reject(errorResponse);
     }
 );
