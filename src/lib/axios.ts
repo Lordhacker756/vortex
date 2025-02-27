@@ -5,8 +5,8 @@ interface ErrorResponse {
     message: string;
     timestamp: string;
 }
-
-const baseUrl = "http://localhost:9000";
+const prod = true;
+const baseUrl = prod ? "https://vortex-api-koba.onrender.com" : "http://localhost:9000";
 
 const axiosInstance = axios.create({
     baseURL: baseUrl,
