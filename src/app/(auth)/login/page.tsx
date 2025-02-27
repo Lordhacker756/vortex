@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Fingerprint } from "lucide-react";
+import { Fingerprint, Loader2 } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/lib/axios";
 import { base64URLToBuffer, transformLoginVerifyCredential } from "@/lib/utils";
@@ -85,6 +85,7 @@ const LoginPage = () => {
 
       localStorage.setItem("authToken", token);
       localStorage.setItem("userId", userId);
+      localStorage.setItem("username", username);
 
       toast.success("Successfully logged in!");
       router.push("/polls");
@@ -99,19 +100,21 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex flex-col md:flex-row min-h-screen bg-black">
       <ServerStartingDialog open={showDialog} setOpen={setShowDialog} />
       {/* Left side - About Vortex */}
-      <div className="flex-1 flex flex-col justify-center px-12">
-        <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>
-        <p className="text-xl text-gray-400 mb-4">
+      <div className="flex-1 flex flex-col justify-center p-6 md:px-12 text-center md:text-left">
+        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 md:mb-6">
+          Vortex ⚡️
+        </h1>
+        <p className="text-lg md:text-xl text-gray-400 mb-8 md:mb-4">
           The Real-Time Voting Platform That Matters
         </p>
       </div>
 
       {/* Right side - Login Form */}
-      <div className="flex-1 flex justify-center items-center">
-        <div className="w-[400px]">
+      <div className="flex-1 flex justify-center items-center p-4">
+        <div className="w-full max-w-[400px]">
           <Card className="w-full">
             <CardHeader>
               <CardTitle>Welcome Back</CardTitle>
@@ -141,7 +144,14 @@ const LoginPage = () => {
                 onClick={handlePasskeyLogin}
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign in with Passkey"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in with Passkey"
+                )}
               </Button>
               <p className="text-sm text-center text-gray-500">
                 Don't have an account?{" "}
