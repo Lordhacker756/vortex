@@ -15,7 +15,6 @@ const MENU_ITEMS = [
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const username = localStorage.getItem("username");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -49,11 +48,6 @@ export function MobileMenu() {
               </Link>
             ))}
           </nav>
-          <div className="px-4 py-6 border-t mt-4">
-            <p className="text-xs text-gray-400 mb-2">
-              Signed in as <span className="font-medium">{username}</span>
-            </p>
-          </div>
         </div>
       </SheetContent>
     </Sheet>
