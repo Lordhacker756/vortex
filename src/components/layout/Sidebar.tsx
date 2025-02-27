@@ -43,9 +43,6 @@ export function Sidebar() {
       // Clear localStorage
       localStorage.clear();
 
-      // Make request to clear the cookie
-      await axios.post("/api/auth/logout", {}, { withCredentials: true });
-
       // Redirect to login page
       router.push("/login");
     } catch (error) {

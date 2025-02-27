@@ -53,6 +53,7 @@ export default function NewPoll() {
     }
 
     try {
+      console.log("Seding request to create poll");
       const response = await axiosInstance.post("/api/polls", {
         name: pollName,
         createdBy: userId,
@@ -130,7 +131,7 @@ export default function NewPoll() {
             </div>
 
             <Button type="submit" className="w-full">
-              Create Poll
+              Create Polls
             </Button>
           </form>
         </CardContent>

@@ -5,17 +5,19 @@ interface ErrorResponse {
     message: string;
     timestamp: string;
 }
-const prod = true;
+const prod = false;
 const baseUrl = prod ? "https://vortex-api-koba.onrender.com" : "http://localhost:9000";
 
 const axiosInstance = axios.create({
     baseURL: baseUrl,
-    // Enable sending cookies with requests
-    withCredentials: true
 });
 
 // Request interceptor for logging
 axiosInstance.interceptors.request.use((config) => {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        config.headers.Authorization = `Bearer ${authToken}`;
+    }
     console.log('\n🚀 Request:', {
         url: config.url,
         method: config.method?.toUpperCase(),

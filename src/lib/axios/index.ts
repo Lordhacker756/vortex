@@ -11,8 +11,13 @@ const axiosInstance = axios.create({
     },
 });
 
-// Remove auth token injection since we're using cookies
 axiosInstance.interceptors.request.use((config) => {
+    // Get token from localStorage
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
     // Log request details
     console.log(`🚀 ${config.method?.toUpperCase()} Request:`, config.url);
     if (config.data) console.log('📦 Request Body:', config.data);
