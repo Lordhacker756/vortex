@@ -1,8 +1,7 @@
-'use client';
-
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ClientWrapper from "./ClientWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,71 +13,62 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// export const metadata: Metadata = {
-//   title: "Vortex ⚡️",
-//   description: "Lighting fast real-time voting",
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
-//   // Favicons
-//   icons: {
-//     icon: [
-//       { url: "/favicon.ico" },
-//       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-//       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-//     ],
-//     apple: [{ url: "/apple-touch-icon.png" }],
-//     other: [
-//       {
-//         rel: "mask-icon",
-//         url: "/safari-pinned-tab.svg",
-//         color: "#5bbad5",
-//       },
-//     ],
-//   },
+export const metadata: Metadata = {
+  metadataBase: new URL("https://votx.vercel.app"),
+  title: "Vortex",
+  description: "Lighting fast real-time voting",
 
-//   // Manifest
-//   manifest: "/site.webmanifest",
+  // Favicons
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 
-//   // Open Graph
-//   openGraph: {
-//     type: "website",
-//     url: "https://vortex-vercel.app",
-//     title: "Vortex ⚡️",
-//     description: "Lighting fast real-time voting",
-//     siteName: "Vortex",
-//     images: [
-//       {
-//         url: "/og-image.png", // Make sure to add your OG image
-//         width: 1200,
-//         height: 630,
-//         alt: "Vortex - Lighting fast real-time voting",
-//       },
-//     ],
-//   },
+  manifest: "/site.webmanifest",
 
-//   // Twitter
-//   twitter: {
-//     card: "summary_large_image",
-//     title: "Vortex ⚡️",
-//     description: "Lighting fast real-time voting",
-//     images: ["/og-image.png"],
-//     creator: "@yourtwitterhandle", // Optional
-//   },
+  // Open Graph
+  openGraph: {
+    type: "website",
+    url: "https://votx.vercel.app",
+    title: "Vortex ⚡️",
+    description: "Lighting fast real-time voting",
+    siteName: "Vortex",
+    images: [
+      {
+        url: "/og-image.png", // Make sure to add your OG image
+        width: 1200,
+        height: 630,
+        alt: "Vortex - Lighting fast real-time voting",
+      },
+    ],
+  },
 
-//   // Additional metadata
-//   themeColor: "#ffffff",
-//   appleWebApp: {
-//     capable: true,
-//     statusBarStyle: "default",
-//     title: "Vortex",
-//   },
-//   viewport: {
-//     width: "device-width",
-//     initialScale: 1,
-//     maximumScale: 1,
-//   },
-//   applicationName: "Vortex",
-//   keywords: ["voting", "real-time", "polls", "vortex"],
-// };
+  // Twitter
+  twitter: {
+    card: "summary_large_image",
+    title: "Vortex ⚡️",
+    description: "Lighting fast real-time voting",
+    images: ["/og-image.png"],
+    creator: "@rudraksx", // Optional
+  },
+
+  // Additional metadata
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Vortex",
+  },
+  applicationName: "Vortex",
+  keywords: ["voting", "real-time", "polls", "vortex"],
+};
 
 export default function RootLayout({
   children,
@@ -90,7 +80,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full w-full`}
       >
-        {children}
+        <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
   );

@@ -17,7 +17,6 @@ import Link from "next/link";
 import axiosInstance from "@/lib/axios";
 import { base64URLToBuffer, transformLoginVerifyCredential } from "@/lib/utils";
 import ServerStartingDialog from "@/components/custom/server-starting";
-import { setAuthToken } from "@/lib/auth";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -26,12 +25,6 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   let timer: NodeJS.Timeout;
-
-  useEffect(() => {
-    // if (localStorage.getItem("userId")) {
-    //   router.push("/polls");
-    // }
-  }, [router]);
 
   const handlePasskeyLogin = async () => {
     try {
@@ -89,7 +82,6 @@ const LoginPage = () => {
       );
 
       const { token } = verificationResponse.data;
-      setAuthToken(token);
 
       toast.success("Successfully logged in!");
       router.push("/polls");
