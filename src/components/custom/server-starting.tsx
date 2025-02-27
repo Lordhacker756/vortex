@@ -10,11 +10,17 @@ import React from "react";
 
 interface ServerStartingDialogProps {
   open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-const ServerStartingDialog = ({ open }: ServerStartingDialogProps) => {
+const ServerStartingDialog = ({ open, setOpen }: ServerStartingDialogProps) => {
   return (
-    <Dialog open={open}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        setOpen(false);
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

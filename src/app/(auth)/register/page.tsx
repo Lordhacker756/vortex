@@ -28,11 +28,12 @@ const RegisterPage = () => {
   const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("userId")) {
-      router.push("/polls");
-    }
+    // if (localStorage.getItem("userId")) {
+    //   router.push("/polls");
+    // }
   }, [router]);
 
+  let timer: NodeJS.Timeout; // Add timer variable
   const handlePasskeyRegistration = async () => {
     try {
       if (!username.trim()) {
@@ -42,22 +43,18 @@ const RegisterPage = () => {
       }
       setError("");
 
-      // Add timeout to show dialog after 5 seconds
-      setTimeout(() => {
+      timer = setTimeout(() => {
+        // Store timer reference
         setShowDialog(true);
       }, 5000);
 
-      const response = await axiosInstance
-        .get("/api/auth/register", {
-          params: {
-            username: username.trim(),
-          },
-        })
-        .finally(() => {
-          setShowDialog(false);
-        });
-
-      console.log("Registration cookies:", document.cookie);
+      const response = await axiosInstance.get("/api/auth/register", {
+        params: {
+          username: username.trim(),
+        },
+      });
+      clearTimeout(timer); // Clear timer on success
+      console.log("Resgister resposne:: ", response);
 
       let challengeObj: ServerPublicKeyCredentialCreationOptions =
         response.data;
@@ -101,7 +98,7 @@ const RegisterPage = () => {
 
       // Here you would typically send the credential back to your server
       const attestationResponse = await axiosInstance.post(
-        "/api/auth/verify-register",
+        `/api/auth/verify-register/${encodeURIComponent(username)}`,
         transformedCredential
       );
 
@@ -113,16 +110,18 @@ const RegisterPage = () => {
       router.push("/login");
     } catch (error) {
       console.error("Error registering passkey:", error);
-      setError("Failed to register passkey");
+      setError("Failed to register passkey: " + error.message);
       toast.error("Failed to register passkey");
+      clearTimeout(timer); // Add timer cleanup here
     } finally {
+      setShowDialog(false);
       setIsRegistering(false);
     }
   };
 
   return (
     <div className="flex min-h-screen bg-black">
-      <ServerStartingDialog open={showDialog} />
+      <ServerStartingDialog open={showDialog} setOpen={setShowDialog} />
       {/* Left side - About Vortex */}
       <div className="flex-1 flex flex-col justify-center px-12">
         <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>

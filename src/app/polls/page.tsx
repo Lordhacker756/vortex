@@ -57,11 +57,20 @@ export default function PollsPage() {
           <Button>Create New Poll</Button>
         </Link>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        {polls.map((poll) => (
-          <PollCard key={poll.pollId} poll={poll} />
-        ))}
-      </div>
+      {polls.length === 0 ? (
+        <div className="text-center py-8 h-screen flex flex-col justify-center items-center">
+          <p className="text-gray-500 text-lg">No polls available</p>
+          <p className="text-gray-400 text-sm mt-2">
+            Create a new poll to get started
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+          {polls.map((poll) => (
+            <PollCard key={poll.pollId} poll={poll} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

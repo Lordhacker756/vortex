@@ -1,3 +1,5 @@
+"use client";
+
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -8,11 +10,6 @@ import { Toaster } from "sonner";
 const geist = Geist({
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "Vortex ⚡️",
-  description: "Lightning fast real-time voting",
-};
 
 export default function RootLayout({
   children,
