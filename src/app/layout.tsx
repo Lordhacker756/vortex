@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ClientWrapper from "./ClientWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,34 +13,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Vortex ⚡️",
+  metadataBase: new URL("https://votx.vercel.app"),
+  title: "Vortex",
   description: "Lighting fast real-time voting",
 
   // Favicons
   icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png" }],
-    other: [
-      {
-        rel: "mask-icon",
-        url: "/safari-pinned-tab.svg",
-        color: "#5bbad5",
-      },
-    ],
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
 
-  // Manifest
   manifest: "/site.webmanifest",
 
   // Open Graph
   openGraph: {
     type: "website",
-    url: "https://vortex-vercel.app",
+    url: "https://votx.vercel.app",
     title: "Vortex ⚡️",
     description: "Lighting fast real-time voting",
     siteName: "Vortex",
@@ -59,20 +57,14 @@ export const metadata: Metadata = {
     title: "Vortex ⚡️",
     description: "Lighting fast real-time voting",
     images: ["/og-image.png"],
-    creator: "@yourtwitterhandle", // Optional
+    creator: "@rudraksx", // Optional
   },
 
   // Additional metadata
-  themeColor: "#ffffff",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Vortex",
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
   },
   applicationName: "Vortex",
   keywords: ["voting", "real-time", "polls", "vortex"],
@@ -88,7 +80,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full w-full`}
       >
-        {children}
+        <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
   );

@@ -26,12 +26,6 @@ const LoginPage = () => {
   const [showDialog, setShowDialog] = useState(false);
   let timer: NodeJS.Timeout;
 
-  useEffect(() => {
-    if (localStorage.getItem("userId")) {
-      router.push("/polls");
-    }
-  }, [router]);
-
   const handlePasskeyLogin = async () => {
     try {
       if (!username.trim()) {
@@ -83,17 +77,13 @@ const LoginPage = () => {
 
       // Send the credential to the server for verification
       const verificationResponse = await axiosInstance.post(
-        "/api/auth/verify-login",
+        `/api/auth/verify-login/${encodeURIComponent(username)}`,
         transformedCredential
       );
 
-      console.log("Verification cookies:", document.cookie);
-      console.log("Login response:", verificationResponse.data);
-
-      localStorage.setItem("userId", verificationResponse.data.user_id);
+      const { token } = verificationResponse.data;
 
       toast.success("Successfully logged in!");
-      setIsLoading(false);
       router.push("/polls");
     } catch (error) {
       console.error("Error logging in with passkey:" + error.message);
