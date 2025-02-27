@@ -47,8 +47,8 @@ export function Sidebar() {
       toast.success("Logged out successfully");
       // Small delay before navigation
       setTimeout(() => {
-        router.replace("/login");
-      }, 10);
+        window.location.href = "/login";
+      }, 100);
     } catch (error) {
       console.error("Error during logout:", error);
     }
