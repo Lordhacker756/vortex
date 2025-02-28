@@ -19,7 +19,6 @@ export default function PollPage({
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [canVote, setCanVote] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const resolvedParams = React.use(params);
 
   useEffect(() => {
@@ -81,7 +80,6 @@ export default function PollPage({
       return;
     }
 
-    setSubmitting(true);
     try {
       await Promise.all(
         selectedOptions.map((optionId) =>
@@ -95,8 +93,6 @@ export default function PollPage({
       router.push(`/polls/${resolvedParams.pollId}/results`);
     } catch (err) {
       toast.error("Failed to cast vote");
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -194,26 +190,21 @@ export default function PollPage({
           <Button
             onClick={handleVote}
             className="mt-6 w-full"
-            disabled={!canVote || submitting}
+            disabled={!canVote}
           >
-            {submitting ? (
-              "Submitting..."
-            ) : canVote ? (
-              "Cast Vote"
-            ) : poll.isClosed ? (
-              "This poll is closed"
-            ) : poll.isPaused ? (
-              "This poll is paused"
-            ) : (
-              "You've already voted!"
-            )}
+            {canVote
+              ? "Cast Vote"
+              : poll.isClosed
+              ? "This poll is closed"
+              : poll.isPaused
+              ? "This poll is paused"
+              : "You've already voted!"}
           </Button>
           <div className="mt-4 text-center">
             <Button
               variant="link"
               onClick={() => router.push(`/polls/${poll.pollId}/results`)}
               className="text-sm"
-              disabled={submitting}
             >
               View current results
             </Button>

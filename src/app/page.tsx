@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="h-[100vh] w-full flex items-center justify-center flex-col">
+    <div className="h-full w-full flex items-center justify-center flex-col">
       <Waves
         lineColor="gray"
         backgroundColor="rgba(255, 255, 255, 0.0)"

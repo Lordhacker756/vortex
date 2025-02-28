@@ -19,6 +19,8 @@ export function MobileMenu() {
   const handleLogout = () => {
     // Add logout functionality here
     console.log("Logging out...");
+    localStorage.clear();
+    window.location.href = "/login";
     setOpen(false);
   };
 

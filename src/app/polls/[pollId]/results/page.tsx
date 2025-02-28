@@ -47,12 +47,18 @@ export default function PollResultsPage({
   useEffect(() => {
     if (!liveMode) return;
 
+    // Use the new dedicated live endpoint that doesn't require authentication headers
     const eventSource = new EventSource(
-      `http://localhost:9000/api/polls/${params.pollId}/results?live=true`,
-      {
-        withCredentials: true,
-      }
+      `http://localhost:9000/api/polls/${params.pollId}/results/live`,
+      { withCredentials: true }
     );
+
+    // Add error listener for better debugging
+    eventSource.onerror = (error) => {
+      console.error("EventSource error:", error);
+      setError("Live updates connection failed");
+      eventSource.close();
+    };
 
     eventSource.addEventListener("poll-update", (event) => {
       const updatedOptions = JSON.parse(event.data);
@@ -68,7 +74,7 @@ export default function PollResultsPage({
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-full w-full px-4 py-6 space-y-4">
         <Card>
           <CardHeader>
             <Skeleton className="h-8 w-3/4" />
@@ -91,7 +97,7 @@ export default function PollResultsPage({
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-6">
+      <div className="max-w-full w-full px-4 py-6">
         <div className="p-4 border border-red-300 bg-red-50 text-red-700 rounded-md flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
           <p className="text-sm">{error}</p>
@@ -101,8 +107,8 @@ export default function PollResultsPage({
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-4">
-      <Card>
+    <div className="max-w-full w-full px-4 py-6 space-y-4">
+      <Card className="w-full">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <CardTitle className="text-xl sm:text-2xl">
@@ -123,12 +129,12 @@ export default function PollResultsPage({
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Pie Chart */}
-            <div className="h-[250px] sm:h-[300px]">
+            <div className="h-[300px] sm:h-[350px] w-full">
               <ResultsChart options={options} chartType="pie" />
             </div>
 
             {/* Bar Chart */}
-            <div className="h-[250px] sm:h-[300px]">
+            <div className="h-[300px] sm:h-[350px] w-full">
               <ResultsChart options={options} chartType="bar" />
             </div>
           </div>
