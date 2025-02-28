@@ -68,15 +68,15 @@ export default function PollResultsPage({
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 space-y-4">
+      <div className="container mx-auto px-4 py-6 space-y-4">
         <Card>
           <CardHeader>
             <Skeleton className="h-8 w-3/4" />
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Skeleton className="h-[300px]" />
-              <Skeleton className="h-[300px]" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Skeleton className="h-[250px]" />
+              <Skeleton className="h-[250px]" />
             </div>
             <div className="space-y-6 mt-6">
               <Skeleton className="h-6 w-full" />
@@ -91,55 +91,62 @@ export default function PollResultsPage({
 
   if (error) {
     return (
-      <div className="container mx-auto p-4 space-y-4">
+      <div className="container mx-auto px-4 py-6">
         <div className="p-4 border border-red-300 bg-red-50 text-red-700 rounded-md flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
-          <p>{error}</p>
+          <p className="text-sm">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 mt-10 space-y-4">
+    <div className="container mx-auto px-4 py-6 space-y-4">
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>{poll?.name} Results</CardTitle>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <CardTitle className="text-xl sm:text-2xl">
+              {poll?.name} Results
+            </CardTitle>
             <div className="flex items-center space-x-2">
               <Switch
                 id="live-mode"
                 checked={liveMode}
                 onCheckedChange={setLiveMode}
               />
-              <Label htmlFor="live-mode">Live Updates</Label>
+              <Label htmlFor="live-mode" className="text-sm">
+                Live Updates
+              </Label>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Pie Chart */}
-            <div className="h-[300px]">
+            <div className="h-[250px] sm:h-[300px]">
               <ResultsChart options={options} chartType="pie" />
             </div>
 
             {/* Bar Chart */}
-            <div className="h-[300px]">
+            <div className="h-[250px] sm:h-[300px]">
               <ResultsChart options={options} chartType="bar" />
             </div>
           </div>
 
           {/* Progress bars */}
-          <div className="space-y-6 mt-6">
+          <div className="space-y-4 mt-6">
+            <h3 className="font-medium">Detailed Results</h3>
             {options.map((option) => {
               const percentage = totalVotes
                 ? (option.votes / totalVotes) * 100
                 : 0;
               return (
-                <div key={option.optionId} className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>{option.optionName}</span>
-                    <span>
+                <div key={option.optionId} className="space-y-1">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                    <span className="text-sm font-medium truncate">
+                      {option.optionName}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
                       {option.votes} votes ({percentage.toFixed(1)}%)
                     </span>
                   </div>
@@ -147,6 +154,10 @@ export default function PollResultsPage({
                 </div>
               );
             })}
+
+            <div className="text-right text-sm text-muted-foreground mt-4">
+              Total votes: {totalVotes}
+            </div>
           </div>
         </CardContent>
       </Card>

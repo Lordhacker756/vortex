@@ -22,11 +22,13 @@ export default function PollsLayout({
       </div>
       <main className="md:pl-72">
         <Header />
-        <div className="min-h-screen md:pt-8 pt-16 pb-8 px-4 max-w-7xl mx-auto">
-          {children}
-          <Toaster richColors position="top-center" closeButton />
+        <div className="min-h-screen md:pt-8 pt-16 px-4 max-w-7xl mx-auto flex flex-col">
+          <div className="flex-grow">
+            {children}
+            <Toaster richColors position="top-center" closeButton />
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </main>
     </div>
   );

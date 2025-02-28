@@ -74,10 +74,10 @@ export default function NewPoll() {
   };
 
   return (
-    <div className="container mx-auto mt-10 p-4">
-      <Card>
+    <div className="container mx-auto px-4 py-6">
+      <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Create New Poll</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Create New Poll</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -97,7 +97,12 @@ export default function NewPoll() {
                   className="mb-2"
                 />
               ))}
-              <Button type="button" variant="outline" onClick={addOption}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addOption}
+                className="w-full sm:w-auto"
+              >
                 Add Option
               </Button>
             </div>
@@ -111,7 +116,7 @@ export default function NewPoll() {
               <Label htmlFor="multi-select">Allow multiple selections</Label>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Start Date</Label>
                 <DatePicker
@@ -131,7 +136,7 @@ export default function NewPoll() {
             </div>
 
             <Button type="submit" className="w-full">
-              Create Polls
+              Create Poll
             </Button>
           </form>
         </CardContent>

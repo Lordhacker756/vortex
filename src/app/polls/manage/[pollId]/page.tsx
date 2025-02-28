@@ -100,14 +100,14 @@ export default function EditPoll() {
 
   if (isLoading)
     return (
-      <div className="container mx-auto p-4 flex justify-center items-center min-h-[60vh]">
+      <div className="container mx-auto px-4 py-6 flex justify-center items-center min-h-[60vh]">
         <p className="text-lg">Loading poll data...</p>
       </div>
     );
 
   if (!poll)
     return (
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto px-4 py-6">
         <p className="text-center text-red-500">Poll not found</p>
         <Button
           onClick={() => router.push("/polls/manage")}
@@ -119,10 +119,10 @@ export default function EditPoll() {
     );
 
   return (
-    <div className="container mx-auto mt-10 p-4">
+    <div className="container mx-auto px-4 py-6">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Edit Poll</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Edit Poll</CardTitle>
         </CardHeader>
         <CardContent>
           <PollForm
@@ -131,14 +131,14 @@ export default function EditPoll() {
             submitLabel="Save Changes"
             isSubmitting={isSubmitting}
             extraButtons={
-              <div className="flex flex-col sm:flex-row gap-2 w-full">
+              <div className="flex flex-col sm:flex-row gap-2 w-full mt-4">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" className="w-full">
                       Close Poll
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="max-w-[90%] sm:max-w-lg">
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         Close poll permanently?
@@ -148,9 +148,14 @@ export default function EditPoll() {
                         accept votes.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleClosePoll}>
+                    <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+                      <AlertDialogCancel className="w-full sm:w-auto">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleClosePoll}
+                        className="w-full sm:w-auto"
+                      >
                         Close Poll
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -163,7 +168,7 @@ export default function EditPoll() {
                       Reset Votes
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="max-w-[90%] sm:max-w-lg">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Reset all votes?</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -171,9 +176,14 @@ export default function EditPoll() {
                         cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleResetPoll}>
+                    <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+                      <AlertDialogCancel className="w-full sm:w-auto">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleResetPoll}
+                        className="w-full sm:w-auto"
+                      >
                         Reset Votes
                       </AlertDialogAction>
                     </AlertDialogFooter>

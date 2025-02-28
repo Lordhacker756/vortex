@@ -120,19 +120,22 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex flex-col md:flex-row min-h-screen bg-black">
       <ServerStartingDialog open={showDialog} setOpen={setShowDialog} />
+
       {/* Left side - About Vortex */}
-      <div className="flex-1 flex flex-col justify-center px-12">
-        <h1 className="text-6xl font-bold text-white mb-6">Vortex ⚡️</h1>
-        <p className="text-xl text-gray-400 mb-4">
+      <div className="md:flex-1 flex flex-col justify-center p-6 md:p-12 md:pb-0 text-center md:text-left">
+        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 md:mb-6">
+          Vortex ⚡️
+        </h1>
+        <p className="text-lg md:text-xl text-gray-400 mb-6 md:mb-4">
           The Real-Time Voting Platform That Matters
         </p>
       </div>
 
       {/* Right side - Register Form */}
-      <div className="flex-1 flex justify-center items-center">
-        <div className="w-[400px]">
+      <div className="md:flex-1 flex justify-center items-center p-6 md:p-12">
+        <div className="w-full max-w-[400px]">
           <Card className="w-full">
             <CardHeader>
               <CardTitle>Create Account</CardTitle>
@@ -155,7 +158,9 @@ const RegisterPage = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isRegistering}
                 />
-                {error && <p className="text-sm text-red-500">{error}</p>}
+                {error && (
+                  <p className="text-sm text-red-500 break-words">{error}</p>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">

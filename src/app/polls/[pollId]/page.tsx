@@ -97,32 +97,41 @@ export default function PollPage({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-6 flex justify-center items-center min-h-[50vh]">
+        <p className="text-lg">Loading poll data...</p>
+      </div>
+    );
   }
 
   if (!poll) {
     return (
-      <div className="container mx-auto p-2 flex items-center justify-center h-screen">
-        <h1 className="text-lg font-bold text-center text-red-500">
+      <div className="container mx-auto px-4 py-6 flex items-center justify-center min-h-[50vh]">
+        <p className="text-lg font-medium text-center text-red-500">
           No poll found for the given ID
-        </h1>
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto mt-10 p-4">
-      <Card>
+    <div className="container mx-auto px-4 py-6">
+      <Card className="max-w-lg mx-auto">
         <CardHeader>
-          <CardTitle>{poll.name}</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl break-words">
+            {poll.name}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {poll.isMulti ? (
             <div className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Select all options that apply:
+              </p>
               {poll.options.map((option) => (
                 <div
                   key={option.optionId}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50"
                 >
                   <Checkbox
                     id={option.optionId}
@@ -140,42 +149,66 @@ export default function PollPage({
                       }
                     }}
                   />
-                  <label htmlFor={option.optionId}>{option.optionName}</label>
+                  <label
+                    htmlFor={option.optionId}
+                    className="text-sm sm:text-base flex-1 cursor-pointer"
+                  >
+                    {option.optionName}
+                  </label>
                 </div>
               ))}
             </div>
           ) : (
-            <RadioGroup
-              onValueChange={(value) => setSelectedOptions([value])}
-              className="space-y-4"
-            >
-              {poll.options.map((option) => (
-                <div
-                  key={option.optionId}
-                  className="flex items-center space-x-2"
-                >
-                  <RadioGroupItem
-                    value={option.optionId}
-                    id={option.optionId}
-                  />
-                  <label htmlFor={option.optionId}>{option.optionName}</label>
-                </div>
-              ))}
-            </RadioGroup>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Select one option:
+              </p>
+              <RadioGroup
+                onValueChange={(value) => setSelectedOptions([value])}
+                className="space-y-4"
+              >
+                {poll.options.map((option) => (
+                  <div
+                    key={option.optionId}
+                    className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50"
+                  >
+                    <RadioGroupItem
+                      value={option.optionId}
+                      id={option.optionId}
+                    />
+                    <label
+                      htmlFor={option.optionId}
+                      className="text-sm sm:text-base flex-1 cursor-pointer"
+                    >
+                      {option.optionName}
+                    </label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
           )}
           <Button
             onClick={handleVote}
-            className="mt-4 w-full"
+            className="mt-6 w-full"
             disabled={!canVote}
           >
             {canVote
               ? "Cast Vote"
               : poll.isClosed
-              ? "This poll is already closed!"
+              ? "This poll is closed"
               : poll.isPaused
-              ? "This poll is paued"
+              ? "This poll is paused"
               : "You've already voted!"}
           </Button>
+          <div className="mt-4 text-center">
+            <Button
+              variant="link"
+              onClick={() => router.push(`/polls/${poll.pollId}/results`)}
+              className="text-sm"
+            >
+              View current results
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

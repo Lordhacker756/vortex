@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,12 @@ const MENU_ITEMS = [
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  const handleLogout = () => {
+    // Add logout functionality here
+    console.log("Logging out...");
+    setOpen(false);
+  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -48,6 +54,18 @@ export function MobileMenu() {
               </Link>
             ))}
           </nav>
+
+          {/* Logout button */}
+          <div className="px-2 mt-auto pt-4 border-t">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-5 w-5 mr-3" />
+              Logout
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
