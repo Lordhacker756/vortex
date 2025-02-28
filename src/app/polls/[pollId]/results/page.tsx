@@ -101,7 +101,7 @@ export default function PollResultsPage({
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <div className="container mx-auto p-4 mt-10 space-y-4">
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">

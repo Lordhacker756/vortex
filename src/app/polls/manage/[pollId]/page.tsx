@@ -119,7 +119,7 @@ export default function EditPoll() {
     );
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto mt-10 p-4">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Edit Poll</CardTitle>

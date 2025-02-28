@@ -25,7 +25,7 @@ export default function PollsPage() {
   if (loading) {
     return (
       <div className="container mx-auto p-4 space-y-4">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center my-6">
           <h1 className="text-3xl font-bold">Active Polls</h1>
           <Skeleton className="h-10 w-32" />
         </div>
@@ -59,7 +59,7 @@ export default function PollsPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center my-6 gap-4">
         <h1 className="text-3xl font-bold">Active Polls</h1>
       </div>
       {polls.length === 0 ? (

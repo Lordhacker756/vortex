@@ -111,7 +111,7 @@ export default function PollPage({
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto mt-10 p-4">
       <Card>
         <CardHeader>
           <CardTitle>{poll.name}</CardTitle>
