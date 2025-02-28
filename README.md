@@ -12,6 +12,9 @@
 
 </div>
 
+## 📌 About
+✨ **Vortex** delivers a mesmerizing voting experience with fluid animations and real-time results. Built with Next.js and modern web technologies, it transforms simple polling into an engaging, interactive adventure that captivates your audience. Make decisions beautiful! 🌊
+
 ## ✨ Features
 
 - 🎯 **Real-Time Voting** - Experience instant vote updates
@@ -19,6 +22,17 @@
 - 🔒 **Secure Authentication** - Robust user authentication system using Passkeys🔑
 - 📱 **Responsive Design** - Seamless experience across all devices
 - ⚡ **Lightning Fast** - Built with Next.js for optimal performance
+- 🌓 **Dark/Light Mode** - Easy on the eyes, any time of day
+- 🔔 **Push Notifications** - Stay updated with vote changes
+- 🌐 **Internationalization** - Support for multiple languages
+- 📊 **Interactive Charts** - Visualize voting patterns beautifully
+
+## 📸 Screenshots
+
+<div align="center">
+<img src="./screenshots/dashboard.png" width="45%" alt="Dashboard View">
+<img src="./screenshots/results.png" width="45%" alt="Results View">
+</div>
 
 ## 🚀 Quick Start
 
@@ -52,6 +66,20 @@ Your app will be running at [http://localhost:8000](http://localhost:8000)! 🎉
 - **Charts**: Recharts
 - **Date Handling**: date-fns
 - **Notifications**: Sonner
+- **Forms**: React Hook Form
+- **API Fetching**: SWR
+
+## 📱 Key Components
+
+- **🔐 WebAuthn Login** - Passwordless authentication
+- **📊 Dynamic Polls** - Create and manage polls with ease
+- **📈 Live Results** - Real-time updates using Server-Sent Events
+- **✏️ Poll Creator** - Intuitive interface for poll creation
+- **👁️ Poll Viewer** - Beautiful presentation of polls and results
+
+## 🔗 API Integration
+
+Vortex frontend seamlessly connects with [Vortex API](../vortex-api) to deliver real-time polling functionality. The API connection is managed through custom hooks that handle authentication, data fetching, and real-time updates.
 
 ## 🤝 Contributing
 
