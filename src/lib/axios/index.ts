@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let prod = false;
+let prod = true;
 export const baseURL = prod ? 'https://vortex-api-koba.onrender.com' : 'http://localhost:9000';
 
 const axiosInstance = axios.create({
