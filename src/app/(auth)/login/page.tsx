@@ -47,7 +47,7 @@ const LoginPage = () => {
         },
       });
       clearTimeout(timer);
-
+      setShowDialog(false);
       let challengeObj = response.data;
 
       // Convert base64url encoded challenge to ArrayBuffer
@@ -89,6 +89,7 @@ const LoginPage = () => {
       toast.success("Successfully logged in!");
       router.push("/polls");
     } catch (error) {
+      setShowDialog(false);
       console.error("Error logging in with passkey:" + error.message);
       setError("Failed to sign in with passkey - " + error.message);
       clearTimeout(timer); // Add timer cleanup here

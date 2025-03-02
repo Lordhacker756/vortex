@@ -54,6 +54,7 @@ const RegisterPage = () => {
         },
       });
       clearTimeout(timer); // Clear timer on success
+      setShowDialog(false)
       console.log("Resgister resposne:: ", response);
 
       let challengeObj: ServerPublicKeyCredentialCreationOptions =
@@ -109,10 +110,12 @@ const RegisterPage = () => {
 
       router.push("/login");
     } catch (error) {
+      setShowDialog(false);
       console.error("Error registering passkey:", error);
       setError("Failed to register passkey: " + error.message);
       toast.error("Failed to register passkey");
       clearTimeout(timer); // Add timer cleanup here
+
     } finally {
       setShowDialog(false);
       setIsRegistering(false);
