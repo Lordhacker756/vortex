@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Poll } from "@/types/poll";
 import Link from "next/link";
+import { format, parseISO } from "date-fns";
 
 interface PollCardProps {
   poll: Poll;
@@ -17,8 +18,8 @@ interface PollCardProps {
 
 export function PollCard({ poll, showManageButton }: PollCardProps) {
   // Format dates
-  const startDate = new Date(poll.startDate).toLocaleDateString();
-  const endDate = new Date(poll.endDate).toLocaleDateString();
+const startDate = format(parseISO(poll.startDate), "PP");
+const endDate = format(parseISO(poll.endDate), "PP");
 
   return (
     <Card className="w-full transition-all hover:shadow-md">
