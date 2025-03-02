@@ -19,6 +19,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { validateDates, parseDateString } from "@/lib/date-utils";
+import { formatInTimeZone } from "date-fns-tz";
 
 export default function EditPoll() {
   const params = useParams();
@@ -35,7 +37,17 @@ export default function EditPoll() {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(`/api/polls/${params.pollId}`);
-      setPoll(response.data.data);
+      const pollData = response.data.data;
+
+      // Use the utility function to parse dates
+      if (pollData.startDate) {
+        pollData.startDate = parseDateString(pollData.startDate);
+      }
+      if (pollData.endDate) {
+        pollData.endDate = parseDateString(pollData.endDate);
+      }
+
+      setPoll(pollData);
     } catch (error) {
       console.error("Error fetching poll:", error);
       toast.error("Failed to load poll");
@@ -44,18 +56,49 @@ export default function EditPoll() {
     }
   };
 
+  const formatDate = (date: Date | null) => {
+    if (!date) return undefined;
+    return {
+      date: date.toISOString(),
+      timezoneOffset: date.getTimezoneOffset(),
+    };
+  };
+
   const handleSubmit = async (formData: PollFormData) => {
     try {
+      // Date validation
+      const dateError = validateDates(formData.startDate, formData.endDate);
+      if (dateError) {
+        toast.error(dateError);
+        return;
+      }
+
       setIsSubmitting(true);
+
+      // Format the dates in ISO format in UTC timezone, preserving the selected date
+      const formatDateToUTC = (date: Date) => {
+        // Set time to noon (12:00) to avoid timezone boundary issues
+        const dateWithNoon = new Date(date);
+        dateWithNoon.setHours(12, 0, 0, 0);
+
+        // Format using date-fns-tz to ensure proper timezone handling
+        return formatInTimeZone(
+          dateWithNoon,
+          "UTC",
+          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        );
+      };
+
       const response = await axiosInstance.patch(
         `/api/polls/${params.pollId}`,
         {
           name: formData.name,
           isMulti: formData.isMulti,
-          startDate: formData.startDate?.toISOString(),
-          endDate: formData.endDate?.toISOString(),
+          startDate: formatDateToUTC(formData.startDate),
+          endDate: formatDateToUTC(formData.endDate),
         }
       );
+
       if (response.status === 200) {
         toast.success("Poll updated successfully!");
         router.push("/polls/manage");

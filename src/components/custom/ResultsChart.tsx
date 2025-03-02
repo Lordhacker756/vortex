@@ -52,10 +52,13 @@ export function ResultsChart({ options, chartType }: ResultsChartProps) {
             cx="50%"
             cy="50%"
             outerRadius={80}
-            label={({ name, percent }) =>
-              `${name.length > 10 ? name.substring(0, 10) + "..." : name} ${(
-                percent * 100
-              ).toFixed(0)}%`
+            // Only show labels for options with votes > 0
+            label={({ name, percent, votes }) =>
+              votes > 0
+                ? `${
+                    name.length > 10 ? name.substring(0, 10) + "..." : name
+                  } ${(percent * 100).toFixed(0)}%`
+                : null
             }
           >
             {chartData.map((_, index) => (

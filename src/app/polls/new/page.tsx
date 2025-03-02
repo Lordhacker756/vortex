@@ -9,6 +9,7 @@ import { DatePicker } from "@/components/custom/date-picker";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
+import { validateDates } from "@/lib/date-utils";
 
 export default function NewPoll() {
   const [options, setOptions] = useState<string[]>(["", ""]);
@@ -29,8 +30,11 @@ export default function NewPoll() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!startDate || !endDate) {
-      toast.error("Please select both start and end dates");
+
+    // Use the utility function for validation
+    const dateError = validateDates(startDate, endDate);
+    if (dateError) {
+      toast.error(dateError);
       return;
     }
 
@@ -53,13 +57,22 @@ export default function NewPoll() {
     }
 
     try {
-      console.log("Seding request to create poll");
+      console.log("Sending request to create poll");
+
+      // Make sure dates are properly formatted
+      const formattedStartDate = startDate
+        ? new Date(startDate).toISOString()
+        : undefined;
+      const formattedEndDate = endDate
+        ? new Date(endDate).toISOString()
+        : undefined;
+
       const response = await axiosInstance.post("/api/polls", {
         name: pollName,
         createdBy: userId,
         isMulti,
-        startDate,
-        endDate,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
         options: validOptions,
       });
 
@@ -74,7 +87,7 @@ export default function NewPoll() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-12">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-xl sm:text-2xl">Create New Poll</CardTitle>

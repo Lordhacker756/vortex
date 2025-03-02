@@ -58,8 +58,8 @@ export default function PollsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="flex flex-col sm:flex-row justify-between items-center my-4 gap-4">
+    <div className="container mx-auto px-4 py-6 lg:py-8">
+      <div className="flex flex-row sm:flex-row justify-between items-center my-6 lg:my-8 gap-4 lg:mb-12">
         <h1 className="text-2xl sm:text-3xl font-bold">Active Polls</h1>
         <Link href="/polls/new">
           <Button>Create New Poll</Button>
@@ -76,7 +76,7 @@ export default function PollsPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 lg:gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
           {polls.map((poll) => (
             <PollCard key={poll.pollId} poll={poll} />
           ))}
