@@ -141,18 +141,6 @@ export default function PollResultsPage({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Pie Chart */}
-            <div className="h-[300px] sm:h-[350px] w-full">
-              <ResultsChart options={options} chartType="pie" />
-            </div>
-
-            {/* Bar Chart */}
-            <div className="h-[300px] sm:h-[350px] w-full">
-              <ResultsChart options={options} chartType="bar" />
-            </div>
-          </div>
-
           {/* Progress bars */}
           <div className="space-y-4 mt-6">
             <h3 className="font-medium">Detailed Results</h3>
@@ -177,6 +165,17 @@ export default function PollResultsPage({
 
             <div className="text-right text-sm text-muted-foreground mt-4">
               Total votes: {totalVotes}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Pie Chart */}
+            <div className="h-[300px] sm:h-[350px] w-full">
+              <ResultsChart options={options} chartType="pie" />
+            </div>
+
+            {/* Bar Chart */}
+            <div className="h-[300px] sm:h-[350px] w-full">
+              <ResultsChart options={options} chartType="bar" />
             </div>
           </div>
         </CardContent>

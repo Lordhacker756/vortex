@@ -80,15 +80,24 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
               <Link href={`/polls/${pollId}`} className="flex-1">
                 <Button
                   className="w-full"
-                  variant="secondary"
+                  variant="default"
                   disabled={!isActive}
                 >
-                  {isActive ? "Vote" : "Starts soon"}
+                  {isClosed
+                    ? "Poll Closed"
+                    : isPaused
+                    ? "Poll Paused"
+                    : isActive
+                    ? "Vote"
+                    : "Starts Soon"}
                 </Button>
               </Link>
               <Link href={`/polls/${pollId}/results`} className="flex-1">
-                <Button className="w-full" variant="outline">
-                  See Results
+                <Button
+                  className="w-full"
+                  variant={isActive ? "outline" : "destructive"}
+                >
+                  {isActive ? "See Results" : "Not Yet Available"}
                 </Button>
               </Link>
             </>
