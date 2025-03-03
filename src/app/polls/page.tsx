@@ -76,7 +76,7 @@ export default function PollsPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-10 lg:gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
+        <div className="grid gap-10  sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
           {polls.map((poll) => (
             <PollCard key={poll.pollId} poll={poll} />
           ))}

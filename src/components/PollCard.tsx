@@ -31,8 +31,12 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
 
   // Check if the poll is currently active based on dates
   const today = new Date();
-  const pollStartDate = new Date(poll.startDate || poll.start_date);
-  const pollEndDate = new Date(poll.endDate || poll.end_date);
+  const pollStartDate = new Date(
+    (poll.startDate || poll.start_date).replace(" +00:00:00", "Z")
+  );
+  const pollEndDate = new Date(
+    (poll.endDate || poll.end_date).replace(" +00:00:00", "Z")
+  );
   const isActive =
     today >= pollStartDate && today <= pollEndDate && !isPaused && !isClosed;
 

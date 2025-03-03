@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
 import { validateDates } from "@/lib/date-utils";
+import { formatInTimeZone } from "date-fns-tz";
 
 export default function NewPoll() {
   const [options, setOptions] = useState<string[]>(["", ""]);
@@ -59,13 +60,24 @@ export default function NewPoll() {
     try {
       console.log("Sending request to create poll");
 
-      // Make sure dates are properly formatted
-      const formattedStartDate = startDate
-        ? new Date(startDate).toISOString()
-        : undefined;
-      const formattedEndDate = endDate
-        ? new Date(endDate).toISOString()
-        : undefined;
+      // Format the dates in ISO format in UTC timezone, preserving the selected date
+      const formatDateToUTC = (date?: Date) => {
+        if (!date) return undefined;
+
+        // Set time to noon (12:00) to avoid timezone boundary issues
+        const dateWithNoon = new Date(date);
+        dateWithNoon.setHours(12, 0, 0, 0);
+
+        // Format using date-fns-tz to ensure proper timezone handling
+        return formatInTimeZone(
+          dateWithNoon,
+          "UTC",
+          "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        );
+      };
+
+      const formattedStartDate = formatDateToUTC(startDate);
+      const formattedEndDate = formatDateToUTC(endDate);
 
       const response = await axiosInstance.post("/api/polls", {
         name: pollName,

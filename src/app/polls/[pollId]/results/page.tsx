@@ -167,7 +167,7 @@ export default function PollResultsPage({
               Total votes: {totalVotes}
             </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 mt-10 lg:grid-cols-2 gap-6">
             {/* Pie Chart */}
             <div className="h-[300px] sm:h-[350px] w-full">
               <ResultsChart options={options} chartType="pie" />
