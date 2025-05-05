@@ -59,14 +59,17 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
                   Paused
                 </Badge>
               )}
-              {isClosed && (
+              {isClosed || !isActive && (
                 <Badge variant="destructive" className="shadow-sm">
                   Closed
                 </Badge>
               )}
-              {!isActive && !isPaused && !isClosed && (
-                <Badge variant="secondary" className="shadow-sm">
-                  Upcoming
+              {isActive && !isPaused && !isClosed && (
+                <Badge 
+                  variant={today < pollStartDate ? "outline" : "default"}
+                  className="shadow-sm bg-green-500/10 text-green-700 hover:bg-green-500/20"
+                >
+                  {today < pollStartDate ? "Upcoming" : "Live"}
                 </Badge>
               )}
             </div>
@@ -85,9 +88,9 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
                 <Button
                   className="w-full"
                   variant="default"
-                  disabled={!isActive}
+                  disabled={!isActive || isClosed}
                 >
-                  {isClosed
+                  {isClosed || !isActive
                     ? "Poll Closed"
                     : isPaused
                     ? "Poll Paused"
@@ -96,14 +99,15 @@ export function PollCard({ poll, showManageButton }: PollCardProps) {
                     : "Starts Soon"}
                 </Button>
               </Link>
-              <Link href={`/polls/${pollId}/results`} className="flex-1">
                 <Button
                   className="w-full"
+                  disabled={!isActive || isClosed}
                   variant={isActive ? "outline" : "destructive"}
                 >
-                  {isActive ? "See Results" : "Not Yet Available"}
-                </Button>
+              <Link href={`/polls/${pollId}/results`} className="flex-1">
+                  {isActive ? "See Results" : today < pollStartDate ? "Not Yet Available" : "Poll Expired"}
               </Link>
+                </Button>
             </>
           )}
 
