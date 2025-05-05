@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Poll, PollOption } from "@/types/poll";
-import axiosInstance from "@/lib/axios";
+import axiosInstance, { baseURL } from "@/lib/axios";
 import React, { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -26,6 +26,7 @@ export default function PollResultsPage({
     const fetchResults = async () => {
       try {
         setLoading(true);
+
         const response = await axiosInstance.get(
           `/api/polls/${params.pollId}/results`
         );
@@ -63,7 +64,7 @@ export default function PollResultsPage({
 
     // Use the new dedicated live endpoint that doesn't require authentication headers
     const eventSource = new EventSource(
-      `http://localhost:9000/api/polls/${params.pollId}/results/live`,
+      `${baseURL}/api/polls/${params.pollId}/results/live`,
       { withCredentials: true }
     );
 
